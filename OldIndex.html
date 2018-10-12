@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!-- This starts the NetworkTables websocket, it can be accessed from multiple
+         pages simultaneously -->
+             <script src="/networktables/networktables.js"></script>
+
+         <!-- Obviously, you will want to copy this file locally in a real 
+              dashboard, as the Driver Station won't have internet access -->
+             <script src="jQuery.js"></script>
+             <script src="d3.js"></script>
+     
+         <!-- uncomment this is you want to use included utility functions that
+              implement common functionality that you might find useful. Requires
+              that d3.js and jQuery are included first -->
+             <script src="/networktables/utils.js"></script>
+    </head>
+    <body>
+        <div>
+	        NetworkTables websocket: <span id="connectstate">Unknown state</span><br/>
+	        Robot: <span id="robotstate">Unknown state</span> @ <span id="robotAddress">disconnected</span>
+        </div>
+
+        
+        Autonomous Position: <select id="autonomousPos"></select>
+        Autonomous Type: <select id="autonomousType"></select>
+        <hr/>
+
+        <table id="nt" border=1>
+	        <tbody></tbody>
+        </table>
+
+
+        Value to write &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
+        &nbsp &nbsp &nbsp  &nbsp &nbsp
+
+        Value being written  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp 
+
+        Return from putValue() function &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
+
+        <br>
+        <input type="number" name="NewValue" id="testInput" value="-1"/>
+        <input type="submit" name="Button" id="button1" onclick="newValueFunc()" value=" " />
+        <input type="text" name="BeingWritten" id="testOutput" value="0"/>
+        <input type="text" name="PutValueRet" id="putValueRet" value="-1"/>
+
+        <script type="text/javascript">
+            "use strict";
+
+            function newValueFunc(){
+	            var ret=0;
+	            var tmpVal=0;
+	            var val=-1;
+	            val=document.getElementById("testInput").value;
+	            document.getElementById("testOutput").value = val;
+	            ret=NetworkTables.putValue("/Test/Time", Number(val));
+	            document.getElementById("putValueRet").value = ret;
+            } 
+
+            $(document).ready(function(){
+	            // sets a function that will be called when the websocket connects/disconnects
+	            NetworkTables.addWsConnectionListener(onNetworkTablesConnection, true);
+	
+	            // sets a function that will be called when the robot connects/disconnects
+	            NetworkTables.addRobotConnectionListener(onRobotConnection, true);
+
+                // attaches the select element to a SendableChooser object
+                attachSelectToSendableChooser("#autonomousPos", "Position");
+                attachSelectToSendableChooser("#autonomousType", "Match Type");
+	
+	            // sets a function that will be called when any NetworkTables key/value changes
+	            NetworkTables.addGlobalListener(onValueChanged, true);
+            });
+            function onRobotConnection(connected) {
+	            $('#robotstate').text(connected ? "Connected!" : "Disconnected");
+	            $('#robotAddress').text(connected ? NetworkTables.getRobotAddress() : "disconnected");
+            }
+            function onNetworkTablesConnection(connected) {
+	            if (connected) {
+		            $("#connectstate").text("Connected!");
+		
+		            // clear the table
+		            $("#nt tbody > tr").remove();
+		
+	            } else {
+		            $("#connectstate").text("Disconnected!");
+	            }
+            }
+            function onValueChanged(key, value, isNew) {
+            	// key thing here: we're using the various NetworkTable keys as
+            	// the id of the elements that we're appending, for simplicity. However,
+            	// the key names aren't always valid HTML identifiers, so we use
+            	// the NetworkTables.keyToId() function to convert them appropriately
+            	if (isNew) {
+            		var tr = $('<tr></tr>').appendTo($('#nt > tbody:last'));
+            		$('<td></td>').text(key).appendTo(tr);
+            		$('<td></td>').attr('id', NetworkTables.keyToId(key)).text(value).appendTo(tr);
+            	} else {
+            		// similarly, use keySelector to convert the key to a valid jQuery
+            		// selector. This should work for class names also, not just for ids
+            		$('#' + NetworkTables.keySelector(key)).text(value);
+            	}
+            }
+        </script>
+    </body>
+</html>
