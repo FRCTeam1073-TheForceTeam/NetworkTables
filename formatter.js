@@ -25,6 +25,8 @@ Object.defineProperty(NetworkTablesObject.prototype, "value", {
 
 NetworkTablesObject.prototype.init = function(){
     this.element = document.createElement("div");
+    this.element.setAttribute("id", this.key);
+    this.element.setAttribute("value", this.value);
     this.data.appendChild(this.element);
     this.element.innerHTML = this.key + " init " + this.value;
     console.log(this.key + " init " + this.value);
@@ -32,6 +34,7 @@ NetworkTablesObject.prototype.init = function(){
 
 NetworkTablesObject.prototype.refresh = function(){
     this.value = NetworkTables.getValue(this.key, 0);
+    this.element.setAttribute("value", this.value);
     this.element.innerHTML = this.key + " refresh " + this.value;
     console.log(this.key + " refresh " + this.value);
 };
