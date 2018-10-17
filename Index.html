@@ -23,10 +23,12 @@
 	        Robot: <span id="robotstate">Unknown state</span> @ <span id="robotAddress">disconnected</span>
         </div>
 
-        
         Autonomous Position: <select id="autonomousPos"></select>
         Autonomous Type: <select id="autonomousType"></select>
         <hr/>
+
+        
+        <div id="dataGoesHere"></div>
 
         <br>
         <input type="number" name="NewValue" id="testInput" value="-1"/>
@@ -41,9 +43,9 @@
 	            var ret=0;
 	            var tmpVal=0;
 	            var val=-1;
-	            val=document.getElementById("testInput").value;
+	            val = document.getElementById("testInput").value;
 	            document.getElementById("testOutput").value = val;
-	            ret=NetworkTables.putValue("/Test/Time", Number(val));
+	            ret = NetworkTables.putValue("/Test/Time", Number(val));
 	            document.getElementById("putValueRet").value = ret;
             } 
 
@@ -76,8 +78,10 @@
 		            $("#connectstate").text("Disconnected!");
 	            }
             }
-
             var objs = [];
+
+            
+
             function onValueChanged(key, value, isNew) {
 
                 
@@ -86,14 +90,13 @@
             	// the key names aren't always valid HTML identifiers, so we use
             	// the NetworkTables.keyToId() function to convert them appropriately
             	if (isNew) {
-                    objs[key] = new NetworkTableObject(key, value);
+                    objs[key] = new NetworkTablesObject(key, value);
             	} else {
             		// similarly, use keySelector to convert the key to a valid jQuery
                     // selector. This should work for class names also, not just for ids
-                    objs[key];
+                    objs[key].refresh();
             	}
             }
         </script>
-        <button id="hi">Press</button>
     </body>
 </html>
