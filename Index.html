@@ -26,28 +26,11 @@
         Autonomous Position: <select id="autonomousPos"></select>
         Autonomous Type: <select id="autonomousType"></select>
         <hr/>
-
         
         <div id="dataGoesHere"></div>
 
-        <br>
-        <input type="number" name="NewValue" id="testInput" value="-1"/>
-        <input type="submit" name="Button" id="button1" onclick="newValueFunc()" value=" " />
-        <input type="text" name="BeingWritten" id="testOutput" value="0"/>
-        <input type="text" name="PutValueRet" id="putValueRet" value="-1"/>
-
         <script type="text/javascript">
             "use strict";
-
-            function newValueFunc(){
-	            var ret=0;
-	            var tmpVal=0;
-	            var val=-1;
-	            val = document.getElementById("testInput").value;
-	            document.getElementById("testOutput").value = val;
-	            ret = NetworkTables.putValue("/Test/Time", Number(val));
-	            document.getElementById("putValueRet").value = ret;
-            } 
 
             $(document).ready(function(){
 	            // sets a function that will be called when the websocket connects/disconnects

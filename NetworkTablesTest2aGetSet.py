@@ -33,4 +33,4 @@ while True:
     i += 2
     print('putting time:', i)
     sd.putNumber('Time2', i)
-    time.sleep(0.5)
+    time.sleep(1.5)
