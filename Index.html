@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+             <script src="NetworkTablesObject.js"></script>
         <!-- This starts the NetworkTables websocket, it can be accessed from multiple
          pages simultaneously -->
              <script src="/networktables/networktables.js"></script>
@@ -61,14 +62,11 @@
 		            $("#connectstate").text("Disconnected!");
 	            }
             }
+
             var objs = [];
 
-            
-
             function onValueChanged(key, value, isNew) {
-
-                
-            	// key thing here: we're using the various NetworkTable keys as
+                // key thing here: we're using the various NetworkTable keys as
             	// the id of the elements that we're appending, for simplicity. However,
             	// the key names aren't always valid HTML identifiers, so we use
             	// the NetworkTables.keyToId() function to convert them appropriately
