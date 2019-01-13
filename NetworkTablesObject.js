@@ -1,7 +1,6 @@
 function NetworkTablesObject(key, value){
     this.data = document.getElementById("dataGoesHere");
     this.currKey = key;
-    this.currSlider;
     this.currValue = value;
     this.init();
 }
@@ -24,30 +23,10 @@ Object.defineProperty(NetworkTablesObject.prototype, "value", {
     }
 });
 
-Object.defineProperty(NetworkTablesObject.prototype, "slider", {
-    get: function(){
-        return this.currSlider;
-    },
-    set: function(slider){
-        this.currSlider = slider;
-    }
-});
-
 NetworkTablesObject.prototype.init = function(){
     this.element = document.createElement("div");
     this.element.setAttribute("id", this.key);
-    this.element.setAttribute("value", this.value);
     this.data.appendChild(this.element);
-
-    this.slider = document.createElement("input");
-    this.slider.setAttribute("type", "range");
-    this.slider.setAttribute("min", 0);
-    this.slider.setAttribute("max", 100);
-    this.slider.setAttribute("value", this.value);
-    this.slider.setAttribute("id", this.key + "/Slider");
-    this.data.appendChild(this.slider);
-
-    this.sliderInputInit(this.key);
 
     this.element.innerHTML = this.key + " init " + this.value;
     console.log(this.key + " init " + this.value);
@@ -55,16 +34,6 @@ NetworkTablesObject.prototype.init = function(){
 
 NetworkTablesObject.prototype.refresh = function(){
     this.value = NetworkTables.getValue(this.key, 0);
-    document.getElementById(this.key + "/Slider").setAttribute("value", this.value);
-    this.element.setAttribute("value", this.value);
-    this.element.innerHTML = this.key + " refresh " + this.value;
-    console.log(this.key + " refresh " + this.value);
-};
-
-NetworkTablesObject.prototype.sliderInputInit = function(key){
-    slider = document.getElementById(key + "/Slider");
-    document.getElementById(key + "/Slider").addEventListener("change", function(){
-        console.log(key + " slider " + document.getElementById(key + "/Slider").value);
-        NetworkTables.putValue(key, Number(document.getElementById(key + "/Slider").value));
-    });
+    this.element.innerHTML = this.key + " : " + this.value;
+    console.log(this.key + " : " + this.value);
 };

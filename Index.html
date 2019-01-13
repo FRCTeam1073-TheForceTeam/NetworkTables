@@ -62,21 +62,26 @@
 		            $("#connectstate").text("Disconnected!");
 	            }
             }
-
             var objs = [];
+            objs[0] = new NetworkTablesObject("/1073Table/GearBox", "null");
+            objs[1] = new NetworkTablesObject("/1073Table/VisionReadout", "null");
+            objs[2] = new NetworkTablesObject("/1073Table/LidarReadout", "null");
 
             function onValueChanged(key, value, isNew) {
                 // key thing here: we're using the various NetworkTable keys as
             	// the id of the elements that we're appending, for simplicity. However,
             	// the key names aren't always valid HTML identifiers, so we use
-            	// the NetworkTables.keyToId() function to convert them appropriately
-            	if (isNew) {
+                // the NetworkTables.keyToId() function to convert them appropriately
+                for (var i = 0; i < objs.length; i++){
+                    objs[i].refresh();
+                }
+            	/*if (isNew) {
                     objs[key] = new NetworkTablesObject(key, value);
             	} else {
             		// similarly, use keySelector to convert the key to a valid jQuery
                     // selector. This should work for class names also, not just for ids
                     objs[key].refresh();
-            	}
+            	}*/
             }
         </script>
     </body>
