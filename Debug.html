@@ -24,12 +24,15 @@
 	        Robot: <span id="robotstate">Unknown state</span> @ <span id="robotAddress">disconnected</span>
         </div>
 
-        <a href="./Debug.html">Debugger</a>
+        <a href="./Index.html">Drivestation</a>
+
+        <br>
+
+        <button id="runDebug">Debug Start!</button>
 
         <br><br>
 
-        Autonomous Position: <select id="autonomousPos"></select>
-        Autonomous Type: <select id="autonomousType"></select>
+        Debug Type: <select id="DebugChooser"></select>
         <hr/>
         
         <div id="dataGoesHere"></div>
@@ -45,11 +48,7 @@
 	            NetworkTables.addRobotConnectionListener(onRobotConnection, true);
 
                 // attaches the select element to a SendableChooser object
-                attachSelectToSendableChooser("#autonomousPos", "Position");
-                attachSelectToSendableChooser("#autonomousType", "Match Type");
-	
-	            // sets a function that will be called when any NetworkTables key/value changes
-	            NetworkTables.addGlobalListener(onValueChanged, true);
+                attachSelectToSendableChooser("#DebugChooser", "Debug");
             });
             function onRobotConnection(connected) {
 	            $('#robotstate').text(connected ? "Connected!" : "Disconnected");
@@ -65,28 +64,6 @@
 	            } else {
 		            $("#connectstate").text("Disconnected!");
 	            }
-            }
-            var objs = [];
-            objs[0] = new NetworkTablesObject("/1073Table/GearBoxReadout", "null");
-            objs[1] = new NetworkTablesObject("/1073Table/VisionReadout", "null");
-            objs[2] = new NetworkTablesObject("/1073Table/LidarReadout", "null");
-            objs[3] = new NetworkTablesObject("/1073Table/Gyro");
-            
-            function onValueChanged(key, value, isNew) {
-                // key thing here: we're using the various NetworkTable keys as
-            	// the id of the elements that we're appending, for simplicity. However,
-            	// the key names aren't always valid HTML identifiers, so we use
-                // the NetworkTables.keyToId() function to convert them appropriately
-                for (var i = 0; i < objs.length; i++){
-                    objs[i].refresh();
-                }
-            	/*if (isNew) {
-                    objs[key] = new NetworkTablesObject(key, value);
-            	} else {
-            		// similarly, use keySelector to convert the key to a valid jQuery
-                    // selector. This should work for class names also, not just for ids
-                    objs[key].refresh();
-            	}*/
             }
         </script>
     </body>
