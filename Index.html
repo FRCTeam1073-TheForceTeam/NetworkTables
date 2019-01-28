@@ -6,7 +6,6 @@
         <!-- This starts the NetworkTables websocket, it can be accessed from multiple
          pages simultaneously -->
              <script src="/networktables/networktables.js"></script>
-             <script src="formatter.js"></script>
 
          <!-- Obviously, you will want to copy this file locally in a real 
               dashboard, as the Driver Station won't have internet access -->
@@ -26,11 +25,20 @@
 
         <a href="./Debug.html">Debugger</a>
 
-        <br><br>
+        <hr/>
 
         Autonomous Position: <select id="autonomousPos"></select>
         Autonomous Type: <select id="autonomousType"></select>
-        <hr/>
+        <br>
+
+        <span>P: </span><input id="changeP" type="text">
+        <span> I: </span><input id="changeI" type="text">
+        <span> D: </span><input id="changeD" type="text">
+        <span> K: </span><input id="changeK" type="text">
+        <span> IZ: </span><input id="changeIZ" type="text">
+        <span> PO: </span><input id="changePO" type="text">
+        <span> CLE: </span><input id="changeCLE" type="text">
+        <br><br>
         
         <div id="dataGoesHere"></div>
 
@@ -66,11 +74,36 @@
 		            $("#connectstate").text("Disconnected!");
 	            }
             }
+
+            document.getElementById("changeP").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changeP", parseFloat(event.target.value));
+            });
+            document.getElementById("changeI").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changeI", parseFloat(event.target.value));
+            });
+            document.getElementById("changeD").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changeD", parseFloat(event.target.value));
+            });
+            document.getElementById("changeK").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changeK", parseFloat(event.target.value));
+            });
+            document.getElementById("changeIZ").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changeIZ", parseFloat(event.target.value));
+            });
+            document.getElementById("changePO").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changePO", parseFloat(event.target.value));
+            });
+            document.getElementById("changeCLE").addEventListener("change", function(event) {
+                NetworkTables.putValue("/1073Table/changeCLE", parseFloat(event.target.value));
+            });
+
             var objs = [];
-            objs[0] = new NetworkTablesObject("/1073Table/GearBoxReadout", "null");
-            objs[1] = new NetworkTablesObject("/1073Table/VisionReadout", "null");
-            objs[2] = new NetworkTablesObject("/1073Table/LidarReadout", "null");
-            objs[3] = new NetworkTablesObject("/1073Table/Gyro");
+            
+            objs[0] = new NetworkTablesObject("/1073Table/PIDReadout");
+            objs[1] = new NetworkTablesObject("/1073Table/GearBoxReadout", "null");
+            objs[2] = new NetworkTablesObject("/1073Table/VisionReadout", "null");
+            objs[3] = new NetworkTablesObject("/1073Table/LidarReadout", "null");
+            objs[4] = new NetworkTablesObject("/1073Table/Gyro");
             
             function onValueChanged(key, value, isNew) {
                 // key thing here: we're using the various NetworkTable keys as

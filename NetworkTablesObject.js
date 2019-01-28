@@ -34,6 +34,6 @@ NetworkTablesObject.prototype.init = function(){
 
 NetworkTablesObject.prototype.refresh = function(){
     this.value = NetworkTables.getValue(this.key, 0);
-    this.element.innerHTML = this.key + " : " + this.value;
-    console.log(this.key + " : " + this.value);
+    this.element.innerHTML = this.key + ": " + this.value;
+    console.log(this.key + ": " + this.value);
 };
