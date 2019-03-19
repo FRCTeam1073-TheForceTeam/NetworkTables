@@ -19,33 +19,46 @@
     </head>
     <body>
         <div>
-	        NetworkTables websocket: <span id="connectstate">Unknown state</span><br/>
-	        Robot: <span id="robotstate">Unknown state</span> @ <span id="robotAddress">disconnected</span>
+	        NetworkTables websocket: <span id="connectstate">Connected!</span><br>
+	        Robot: <span id="robotstate">Connected!</span> @ <span id="robotAddress">10.10.73.2</span>
         </div>
 
         <a href="./Debug.html">Debugger</a>
 
-        <hr/>
+        <hr>
+        <div id="station"><h1><span></span><p>    </p><span></span></h1></div>
 
-        Autonomous Position: <select id="autonomousPos"></select>
-        Autonomous Type: <select id="autonomousType"></select>
-        <br>
+        <!-- Autonomous Position: <select id="autonomousPos"><option>None</option><option>Left</option><option>Center</option><option>Right</option></select>
+        Autonomous Type: <select id="autonomousType"><option>None</option><option>Qualifications</option><option>Eliminations</option><option>Experimental</option></select>
+        <br><br> -->
 
-        <span>P: </span><input id="changeP" type="text">
+        <!--<span>P: </span><input id="changeP" type="text">
         <span> I: </span><input id="changeI" type="text">
         <span> D: </span><input id="changeD" type="text">
         <span> K: </span><input id="changeK" type="text">
         <span> IZ: </span><input id="changeIZ" type="text">
         <span> PO: </span><input id="changePO" type="text">
         <span> CLE: </span><input id="changeCLE" type="text">
-        <br><br>
+        <br><br>-->
         
         <div id="dataGoesHere"></div>
-
+        <strong><br>Vision Displays:<br></strong>
+        <canvas id="visionCanvas0" width="640" height="240" style="border:1px solid #000000;"></canvas>
         <script type="text/javascript">
             "use strict";
+            var station = document.getElementById("station").children[0];
+            var timer = station.children[0];
+            var battery = station.children[2];
 
-            $(document).ready(function(){
+            var visionCanvas = document.getElementById("visionCanvas0");
+            var ctx = visionCanvas.getContext('2d');
+            var img0 = new Image(320, 240);
+            var img1 = new Image(320, 240);
+            var img2 = new Image(320, 240);
+            var img3 = new Image(320, 240);
+            var counter = 0;
+
+            $(document).ready(function() {
 	            // sets a function that will be called when the websocket connects/disconnects
 	            NetworkTables.addWsConnectionListener(onNetworkTablesConnection, true);
 	
@@ -55,7 +68,79 @@
                 // attaches the select element to a SendableChooser object
                 attachSelectToSendableChooser("#autonomousPos", "Position");
                 attachSelectToSendableChooser("#autonomousType", "Match Type");
-	
+
+                // img0.onload = function() {
+                //     img0.width = 320;
+                //     img0.height = 240;
+                //     ctx.drawImage(img0, 0, 0);
+                // }
+                // window.setInterval(function() {
+                //     img0.src = "http://10.10.73.3:5801/1?" + counter;
+                //     counter++;
+                // }, 75);
+
+                img1.onload = function() {
+                    img0.width = 320;
+                    img0.height = 240;
+                    ctx.drawImage(img1, 320, 0);
+                }
+                window.setInterval(function() {
+                    img1.src = "http://10.10.73.3:5801/1?" + counter;
+                    counter++;
+                }, 75);
+
+                /*img2.onload = function() {
+                    ctx.clearRect(0, 240, 320, 240);
+                    ctx.drawImage(img2, 0, 240);
+                }
+                window.setInterval(function() {
+                    img2.src = "http://10.10.73.3:8081/0?" + counter;
+                    counter++;
+                }, 400);
+
+                img3.onload = function() {
+                    ctx.clearRect(320, 240, 320, 240);
+                    ctx.drawImage(img3, 320, 240);
+                }
+                window.setInterval(function() {
+                    img3.src = "http://10.10.73.3:8081/2?" + counter;
+                    counter++;
+                }, 400);*/
+
+                // NetworkTables.addKeyListener("/CameraFeedback/cam_0_lineseg",
+                //     function() {
+                //         /* [x1, y1, x2, y2, theta, score, length...] */
+                //         var data = NetworkTables.getValue("/CameraFeedback/cam_0_lineseg", []);
+
+                //         for (var i = 0; i < data.length; i += 7) {
+                //             ctx.lineWidth = 10;
+                //             ctx.beginPath();
+                //             ctx.moveTo(data[i], data[i + 1]);
+                //             ctx.lineTo(data[i + 2], data[i + 3]);
+                //             ctx.stroke();
+                //             ctx.lineWidth = 1;
+                //         }
+                //     }, true);
+
+                NetworkTables.addKeyListener("/1073Table/Time", function() {
+                    var time = NetworkTables.getValue("/1073Table/Time", 0);
+                    var endGame = 30;
+
+                    if (NetworkTables.getValue("/1073Table/Period") == "Auto") timer.innerHTML = "Time: <mark style='color:black;background-color:yellow'>" + parseFloat(time).toFixed(2) + "</mark>";
+                    else if (time <= endGame) timer.innerHTML = "Time: <mark style='color:black;background-color:red'>" + parseFloat(time).toFixed(2) + "</mark>";
+                    else timer.innerHTML = "Time: <mark style='color:white;background-color:green'>" + parseFloat(time).toFixed(2) + "</mark>";
+                });
+
+                NetworkTables.addKeyListener("/1073Table/Voltage", function() {
+                    var voltage = NetworkTables.getValue("/1073Table/Voltage", 0);
+                    var brown = NetworkTables.getValue("/1073Table/isBrowned", true);
+
+                    if (voltage > 12.4) battery.innerHTML = "Battery: <mark style='color:white;background-color:green'>" + parseFloat(voltage).toFixed(1) + "</mark>"
+                    else if (voltage > 11.5) battery.innerHTML = "Battery: <mark style='color:black;background-color:yellow'>" + parseFloat(voltage).toFixed(1) + "</mark>"
+                    else battery.innerHTML = "Battery: <mark style='color:black;background-color:red'>" + parseFloat(voltage).toFixed(1) + "</mark>"
+                    if (brown) battery.innerHTML = "Battery: <mark style='color:white;background-color:red'><b>" + parseFloat(voltage).toFixed(1)+ "</b></mark>"
+                });
+
 	            // sets a function that will be called when any NetworkTables key/value changes
 	            NetworkTables.addGlobalListener(onValueChanged, true);
             });
@@ -75,7 +160,7 @@
 	            }
             }
 
-            document.getElementById("changeP").addEventListener("change", function(event) {
+            /*document.getElementById("changeP").addEventListener("change", function(event) {
                 NetworkTables.putValue("/1073Table/changeP", parseFloat(event.target.value));
             });
             document.getElementById("changeI").addEventListener("change", function(event) {
@@ -95,22 +180,19 @@
             });
             document.getElementById("changeCLE").addEventListener("change", function(event) {
                 NetworkTables.putValue("/1073Table/changeCLE", parseFloat(event.target.value));
-            });
+            });*/
 
             var objs = [];
-            
-            objs[0] = new NetworkTablesObject("/1073Table/PIDReadout");
-            objs[1] = new NetworkTablesObject("/1073Table/GearBoxReadout", "null");
-            objs[2] = new NetworkTablesObject("/1073Table/VisionReadout", "null");
-            objs[3] = new NetworkTablesObject("/1073Table/LidarReadout", "null");
-            objs[4] = new NetworkTablesObject("/1073Table/Gyro");
+
+            // objs[0] = new NetworkTablesObject("/1073Table/GearBoxReadout", "null");
+            // objs[1] = new NetworkTablesObject("/1073Table/Gyro");
             
             function onValueChanged(key, value, isNew) {
                 // key thing here: we're using the various NetworkTable keys as
             	// the id of the elements that we're appending, for simplicity. However,
             	// the key names aren't always valid HTML identifiers, so we use
                 // the NetworkTables.keyToId() function to convert them appropriately
-                for (var i = 0; i < objs.length; i++){
+                for (var i = 0; i < objs.length; i++) {
                     objs[i].refresh();
                 }
             	/*if (isNew) {

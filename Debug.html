@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-             <script src="NetworkTablesObject.js"></script>
+             <script src="NetworkTablesTestObject.js"></script>
         <!-- This starts the NetworkTables websocket, it can be accessed from multiple
          pages simultaneously -->
              <script src="/networktables/networktables.js"></script>
@@ -26,7 +26,11 @@
         <a href="./Index.html">Drivestation</a>
         <hr/>
 
-        Debug Type: <select id="DebugChooser"></select><span> </span><button id="runDebug">Debug Start!</button>
+        Test Type: <select id="DebugChooser"></select><span> </span><button id="runDebug">Test Start!</button><span id="debugMode">false</span>
+        
+        <br>
+        
+        <button id="debugClear">Data Clear</button>
 
         <br><br>
         
@@ -47,16 +51,13 @@
                 // attaches the select element to a SendableChooser object
                 attachSelectToSendableChooser("#DebugChooser", "Debug");
 
+                NetworkTables.addGlobalListener(onValueChanged, true);
+
                 NetworkTables.addKeyListener("/1073Table/DebugMode", 
                     function() {
                         debugging = NetworkTables.getValue("/1073Table/DebugMode", false);
+                        document.getElementById("debugMode").innerHTML = debugging;
                     }, true);
-
-                NetworkTables.addKeyListener("/1073Table/DebugStatus",
-                    function() {
-
-                    }, true);
-
                 document.getElementById("runDebug").addEventListener("click", function() {
                     if (!debugging) {
                         debugging = true;
@@ -64,6 +65,12 @@
                     } else if (debugging) {
                         debugging = false;
                         NetworkTables.putValue("/1073Table/DebugMode", debugging);
+                    }
+                    document.getElementById("debugMode").innerHTML = debugging;
+                });
+                document.getElementById("debugClear").addEventListener("click", function() {
+                    for (var i = 0; i < document.getElementById("dataGoesHere").children.length; i++) {
+                        document.getElementById("dataGoesHere").children[i].innerHTML = "";
                     }
                 });
             });
@@ -74,13 +81,25 @@
             function onNetworkTablesConnection(connected) {
 	            if (connected) {
 		            $("#connectstate").text("Connected!");
-		
 		            // clear the table
 		            $("#nt tbody > tr").remove();
 		
 	            } else {
 		            $("#connectstate").text("Disconnected!");
 	            }
+            }
+            var numObjs = -1;
+            var objs = [];
+            
+            function onValueChanged(key, value, isNew) {
+            	if (isNew && key.search("DebugState") != -1 && NetworkTables.getValue("/1073Table/Enabled", false)) {
+                    numObjs++;
+                    objs[numObjs] = new NetworkTablesTestObject(key, value);
+            	} else if (NetworkTables.getValue("/1073Table/Enabled", false)) {
+            		for (var i = 0; i < objs.length; i++) {
+                        objs[i].refresh();
+                    }
+            	}
             }
         </script>
     </body>

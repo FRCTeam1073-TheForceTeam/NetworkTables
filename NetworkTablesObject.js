@@ -29,11 +29,9 @@ NetworkTablesObject.prototype.init = function(){
     this.data.appendChild(this.element);
 
     this.element.innerHTML = this.key + " init " + this.value;
-    console.log(this.key + " init " + this.value);
 };
 
 NetworkTablesObject.prototype.refresh = function(){
     this.value = NetworkTables.getValue(this.key, 0);
     this.element.innerHTML = this.key + ": " + this.value;
-    console.log(this.key + ": " + this.value);
 };

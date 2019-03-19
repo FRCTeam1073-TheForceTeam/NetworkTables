@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Nathaniel Sucks</title>
+    </head>
+    <body>
+        <h1><font id="suckage" color="black">This is a webpage!</font></h1>
+        <p>Move the mouse for something fun...</p>
+        <script type="text/javascript">
+            var suck = document.getElementById("suckage");
+            document.addEventListener("mousemove", function() {
+                var randomColor = Math.floor(Math.random()*16777215).toString(16);
+                suck.color = randomColor;
+            });
+        </script>
+    </body>
+</html>
